@@ -1,4 +1,5 @@
 import Video from '#models/video'
+import { createPostValidator, updateValidator } from '#validators/video'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class VideosController {
@@ -14,7 +15,9 @@ export default class VideosController {
             "url"
         ])
 
-        const newVideo = await Video.create(data)
+        const payload = await createPostValidator.validate(data)
+
+        const newVideo = await Video.create(payload)
         return response.status(200).json(newVideo)
     }
 
@@ -28,6 +31,43 @@ export default class VideosController {
 
         else{
             return response.status(200).json(video) 
+        }
+    }
+
+    async update({response, request, params}:HttpContext){
+        const videoId = params.id
+        const videoToUpdate = await Video.findOrFail(videoId)
+
+        const data = request.only([
+            "title",
+            "description",
+            "url"
+        ])
+
+        const payload = await updateValidator.validate(data)
+
+        if(!videoToUpdate){
+            return response.status(404).json({ message : "Video not found" })
+        }
+
+        else{
+            const updatedVideo = await videoToUpdate.merge({title : payload.title ?? videoToUpdate.title, description : payload.description ?? videoToUpdate.description, url : payload.url ?? videoToUpdate.url})
+
+            return response.status(200).json(updatedVideo)
+        }
+    }
+
+    async destroy({response, params}:HttpContext){
+        const videoId = params.id
+        const videoToDelete = await Video.findOrFail(videoId)
+        
+        if(!videoToDelete){
+            return response.status(404).json({ message : "Video not found" })
+        }
+
+        else{
+            await videoToDelete.delete()
+            return response.status(200).json({ message : "Video successfully deleted" })
         }
     }
 }
