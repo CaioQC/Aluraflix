@@ -7,8 +7,8 @@ export default class extends BaseSeeder {
       {
         id : 1,
         name : "General Audience",
-        color : "red"
-      }
+        color : "Green"
+      },
     ])
   }
 }

@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.string("title").notNullable()
       table.string("description").notNullable()
       table.string("url").notNullable()
-      table.integer("video_category_id").unsigned().references("id").inTable("videos_categories").onDelete("CASCADE")
+      table.integer("video_category_id").unsigned().references("id").inTable("video_categories").onDelete("CASCADE")
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').notNullable()
     })

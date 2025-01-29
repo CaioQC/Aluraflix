@@ -7,6 +7,7 @@
 |
 */
 
+import VideoCategoriesController from '#controllers/video_categories_controller'
 import VideosController from '#controllers/videos_controller'
 import router from '@adonisjs/core/services/router'
 
@@ -17,3 +18,4 @@ router.get('/', async () => {
 })
 
 router.resource("/videos", VideosController).apiOnly()
+router.resource("/categories", VideoCategoriesController).apiOnly()

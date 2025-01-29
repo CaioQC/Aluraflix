@@ -5,6 +5,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 export default class VideosController {
     async index({response}:HttpContext){
         const videos = await Video.query()
+
         return response.status(200).json(videos)
     }
 
@@ -12,17 +13,25 @@ export default class VideosController {
         const data = request.only([
             "title",
             "description",
-            "url"
+            "url",
+            "video_category_id"
         ])
 
         const payload = await createPostValidator.validate(data)
 
-        const newVideo = await Video.create(payload)
+        const {video_category_id, ...video_without_category} = payload
+
+        const newVideo = await Video.create(
+            video_category_id ? payload : {...video_without_category, video_category_id : 1}
+        )
+
+        await newVideo.load("category")
         return response.status(200).json(newVideo)
     }
 
     async show({response, params}:HttpContext){
         const videoId = params.id
+
         const video = await Video.findOrFail(videoId)
 
         if(!video){
@@ -36,6 +45,7 @@ export default class VideosController {
 
     async update({response, request, params}:HttpContext){
         const videoId = params.id
+
         const videoToUpdate = await Video.findOrFail(videoId)
 
         const data = request.only([
@@ -59,6 +69,7 @@ export default class VideosController {
 
     async destroy({response, params}:HttpContext){
         const videoId = params.id
+
         const videoToDelete = await Video.findOrFail(videoId)
         
         if(!videoToDelete){
@@ -67,6 +78,7 @@ export default class VideosController {
 
         else{
             await videoToDelete.delete()
+
             return response.status(200).json({ message : "Video successfully deleted" })
         }
     }
