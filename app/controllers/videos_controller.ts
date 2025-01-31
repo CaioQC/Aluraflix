@@ -3,8 +3,16 @@ import { createPostValidator, updateValidator } from '#validators/video'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class VideosController {
-    async index({response}:HttpContext){
-        const videos = await Video.query()
+    async index({response, request}:HttpContext){
+        const queryVideos = Video.query()
+        
+        const { title } = request.qs()
+
+        if(title){
+            queryVideos.whereLike("title", "%" + title + "%")
+        }
+
+        const videos = await queryVideos
 
         return response.status(200).json(videos)
     }

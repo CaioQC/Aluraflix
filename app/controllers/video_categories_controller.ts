@@ -1,3 +1,4 @@
+import Video from '#models/video'
 import VideoCategory from '#models/video_category'
 import { categoryPostValidator } from '#validators/video_category'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -59,5 +60,13 @@ export default class VideoCategoriesController {
         await category.delete()
 
         return response.status(200).json({ message : "Category successfully deleted" })
+   }
+
+   async showCategoryVideos({response, params}:HttpContext){
+        const categoryId = params.id
+
+        const videos = await Video.query().where("video_category_id", categoryId)
+
+        return response.status(200).json(videos)
    }
 }

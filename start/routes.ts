@@ -19,3 +19,4 @@ router.get('/', async () => {
 
 router.resource("/videos", VideosController).apiOnly()
 router.resource("/categories", VideoCategoriesController).apiOnly()
+router.get("/categories/:id/videos", [VideoCategoriesController, "showCategoryVideos"])
